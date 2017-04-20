@@ -519,7 +519,7 @@ func TestMarathonTaskFilter(t *testing.T) {
 		{
 			task: marathon.Task{
 				AppID: "specify-port-number",
-				Ports: []int{80},
+				Ports: []int{},
 			},
 			applications: &marathon.Applications{
 				Apps: []marathon.Application{
