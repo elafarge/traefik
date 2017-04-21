@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/containous/traefik/log"
-	"github.com/streamrail/concurrent-map"
 )
 
 const (
@@ -129,6 +128,7 @@ func (fblh frontendBackendLoggingHandler) ServeHTTP(rw http.ResponseWriter, req 
 	if qmIndex := strings.Index(uri, "?"); qmIndex > 0 {
 		uri = uri[0:qmIndex]
 	}
+	remoteAddr := req.RemoteAddr
 	proto := req.Proto
 	referer := req.Referer()
 	agent := req.UserAgent()
@@ -140,8 +140,8 @@ func (fblh frontendBackendLoggingHandler) ServeHTTP(rw http.ResponseWriter, req 
 
 	elapsed := time.Now().UTC().Sub(startTime.UTC())
 	elapsedMillis := elapsed.Nanoseconds() / 1000000
-	fmt.Fprintf(fblh.writer, `%s - %s [%s] "%s %s %s" %d %d "%s" "%s" %s "%s" "%s" %dms%s`,
-		host, username, ts, method, uri, proto, status, size, referer, agent, fblh.reqid, frontend, backend, elapsedMillis, "\n")
+	// Format: host - username [ts] "method uri proto" status size "referer" "remote_ip:remote_port" "agent" "reqid" frontend backend latency
+	fmt.Fprintf(fblh.writer, `%s - %s [%s] "%s %s %s" %d %d "%s" "%s" "%s" %s "%s" "%s" %dms%s`, host, username, ts, method, uri, proto, status, size, referer, remoteAddr, agent, fblh.reqid, frontend, backend, elapsedMillis, "\n")
 
 }
 
